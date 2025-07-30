@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>5 Star Truck Sales - Download App</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+            padding: 40px 20px;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .container {
+            max-width: 400px;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+        
+        .logo {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .subtitle {
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+        
+        .redirect-message {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-top: 4px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+
+        
+        .qr-section {
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        #qrcode {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            display: inline-block;
+            margin-top: 20px;
+        }
+        
+        .url-input {
+            width: 100%;
+            max-width: 300px;
+            padding: 10px 15px;
+            margin: 10px 0;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+        }
+        
+        .generate-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: background 0.3s ease;
+        }
+        
+        .generate-btn:hover {
+            background: #45a049;
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrious/4.0.2/qrious.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">⭐ 5 Star Truck Sales</div>
+        <div class="subtitle">Download Our Mobile App</div>
+        
+        <div class="redirect-message">Redirecting to your device's app store...</div>
+        <div class="spinner"></div>
+        
+
+        
+        <div class="qr-section">
+            <h3>Generate QR Code</h3>
+            <p style="font-size: 0.9rem; opacity: 0.8;">Enter the URL where you'll host this page:</p>
+            <input type="text" id="urlInput" class="url-input" placeholder="https://yourwebsite.com/app-redirect" />
+            <br>
+            <button onclick="generateQR()" class="generate-btn">Generate QR Code</button>
+            <div id="qrcode"></div>
+        </div>
+    </div>
+
+    <script>
+        // Smart redirect logic
+        function detectDeviceAndRedirect() {
+            const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+            const isIOS = /iPad|iPhone|iPod/.test(userAgent) && !window.MSStream;
+            const isAndroid = /android/i.test(userAgent);
+            
+            // Add a small delay for better UX
+            setTimeout(() => {
+                if (isIOS) {
+                    window.location.href = 'https://apps.apple.com/us/app/5-star-truck-sales/id6749165366';
+                } else {
+                    // Default to Google Play for Android and all other devices
+                    window.location.href = 'https://play.google.com/store/apps/details?id=com.fivestartrucksales.mobile';
+                }
+            }, 2000);
+        }
+        
+        // QR Code generation
+        function generateQR() {
+            const url = document.getElementById('urlInput').value.trim();
+            const qrContainer = document.getElementById('qrcode');
+            
+            if (!url) {
+                alert('Please enter a URL first!');
+                return;
+            }
+            
+            // Validate URL format
+            try {
+                new URL(url);
+            } catch (e) {
+                alert('Please enter a valid URL (including https://)');
+                return;
+            }
+            
+            // Clear previous QR code
+            qrContainer.innerHTML = '';
+            
+            // Generate new QR code
+            const qr = new QRious({
+                element: document.createElement('canvas'),
+                value: url,
+                size: 200,
+                level: 'M'
+            });
+            
+            qrContainer.appendChild(qr.canvas);
+        }
+        
+        // Auto-redirect on page load (only if not generating QR codes)
+        window.addEventListener('load', () => {
+            // Only auto-redirect if we're not on localhost or file://
+            // This prevents redirect during development/testing
+            if (window.location.protocol !== 'file:' && !window.location.hostname.includes('localhost')) {
+                detectDeviceAndRedirect();
+            } else {
+                document.querySelector('.redirect-message').textContent = 'Testing mode - scan with mobile device';
+                document.querySelector('.spinner').style.display = 'none';
+            }
+        });
+        
+        // Add some example URLs to help user
+        document.addEventListener('DOMContentLoaded', () => {
+            const urlInput = document.getElementById('urlInput');
+            urlInput.addEventListener('focus', () => {
+                if (!urlInput.value) {
+                    urlInput.placeholder = 'e.g., https://yourdomain.com/app-redirect.html';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
